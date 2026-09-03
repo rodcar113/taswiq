@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taswiq Brands - Agencia de Marketing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- VARIABLES --- */
+        :root {
+            --color-blue: #090a0f; 
+            --color-navy: #222548; /* Azul Marino del Logo */
+            --color-card: #12141d;
+            --color-green: #51af31;
+            --color-light: #f4f4f9;
+            --color-white: #ffffff;
+            --font-main: 'Montserrat', sans-serif;
+        }
+        
+        /* Reset y Optimizaciones de Rendimiento */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-main); }
+        body { background-color: var(--color-blue); color: var(--color-white); overflow-x: hidden; position: relative; -webkit-font-smoothing: antialiased; }
+        a, button, input, textarea { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        
+        /* Forzar aceleración por hardware en animaciones */
+        .fade-up, .nav-logo { will-change: transform, opacity; }
+
+        /* --- PRELOADER --- */
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: var(--color-blue); z-index: 99999;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        .loader-logo { color: var(--color-white); font-size: 3rem; font-weight: 900; letter-spacing: 2px; margin-bottom: 20px; }
+        .loader-logo span { color: var(--color-green); }
+        .spinner { width: 50px; height: 50px; border: 4px solid rgba(81, 175, 49, 0.2); border-top-color: var(--color-green); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- CANVAS NEÓN --- */
+        #neon-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; will-change: contents; }
+
+        /* --- NAVBAR (TRANSICIÓN DE CRISTAL A LUZ) --- */
+        header { 
+            position: fixed; top: 0; left: 0; width: 100%; padding: 30px 50px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            z-index: 1000; background-color: transparent; 
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        
+        /* Estado scroleado: Fondo claro para que el logo azul marino resalte */
+        header.scrolled { 
+            background-color: rgba(244, 244, 249, 0.95); 
+            backdrop-filter: blur(10px); 
+            padding: 15px 50px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); 
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .nav-logo { max-height: 40px; width: auto; transition: transform 0.3s ease; }
+        .logo-link:hover .nav-logo { transform: scale(1.05); }
+        .nav-links { display: flex; gap: 30px; }
+        
+        /* Enlaces del menú al inicio (Blancos) */
+        .nav-links li a { font-weight: 600; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; position: relative; padding-bottom: 5px; transition: color 0.4s ease; color: var(--color-white); }
+        .nav-links li a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background-color: var(--color-green); transition: width 0.3s ease; }
+        .nav-links li a:hover::after { width: 100%; }
+
+        /* Enlaces del menú cuando hay scroll (Azul Marino para contrastar con fondo claro) */
+        header.scrolled .nav-links li a { color: var(--color-navy); }
+        header.scrolled .nav-links li a:hover { color: var(--color-green); }
+
+        /* --- ENCABEZADOS DE SECCIÓN --- */
+        .bnn-header { display: flex; align-items: center; gap: 15px; margin-bottom: 40px; }
+        .bnn-header .line { height: 1px; width: 50px; background-color: var(--color-green); }
+        .bnn-header span { font-size: 0.8rem; font-weight: 800; letter-spacing: 5px; color: rgba(255,255,255,0.6); text-transform: uppercase; }
+
+        /* --- HERO (INICIO) --- */
+        #inicio { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 5vw; position: relative; z-index: 1; }
+        #inicio h1 { font-size: clamp(3.5rem, 8vw, 7.5rem); font-weight: 900; line-height: 0.95; margin-bottom: 30px; text-transform: uppercase; letter-spacing: -2px; }
+        
+        /* Gradiente Verde Taswiq (Efecto Flasheo/Desvanecimiento) */
+        .gradient-text-green { 
+            background: linear-gradient(90deg, #51af31, #222548, #51af31, #84d867, #51af31); 
+            background-size: 300% auto; 
+            color: transparent; 
+            -webkit-background-clip: text; 
+            background-clip: text; 
+            animation: gradientMove 4s linear infinite; 
+        }
+        @keyframes gradientMove { to { background-position: 300% center; } }
+        
+        #inicio p.desc { font-size: 1.2rem; max-width: 700px; margin-bottom: 50px; font-weight: 300; line-height: 1.6; color: rgba(255,255,255,0.8); }
+        .btn-hero { display: inline-block; padding: 20px 60px; font-size: 1.1rem; font-weight: 800; background-color: var(--color-green); color: var(--color-blue); border: 2px solid var(--color-green); border-radius: 50px; text-transform: uppercase; letter-spacing: 2px; transition: all 0.4s ease; box-shadow: 0 10px 30px rgba(81, 175, 49, 0.3); cursor: pointer; }
+        .btn-hero:hover { background-color: transparent; color: var(--color-white); box-shadow: 0 0 20px rgba(81, 175, 49, 0.6); }
+
+        /* --- CINTA MARQUEE --- */
+        .marquee-wrapper { position: absolute; bottom: 40px; width: 100vw; overflow: hidden; white-space: nowrap; display: flex; align-items: center; z-index: 1; opacity: 0.6; }
+        .marquee { display: inline-block; animation: scrollText 20s linear infinite; font-size: 1.2rem; font-weight: 800; color: rgba(255,255,255,0.5); letter-spacing: 4px; text-transform: uppercase; }
+        .marquee span.highlight { color: var(--color-green); }
+        @keyframes scrollText { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        /* --- SECCIONES COMUNES --- */
+        section { padding: 120px 10vw; position: relative; z-index: 1; }
+        
+        /* --- SERVICIOS (SIMETRÍA PERFECTA 3x2) --- */
+        #servicios { background-color: rgba(9, 10, 15, 0.8); backdrop-filter: blur(5px); }
+        .services-intro { margin-bottom: 60px; text-align: center; }
+        .services-intro h2 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; margin-bottom: 20px; text-transform: uppercase; }
+        .services-intro p { font-size: 1.1rem; color: rgba(255,255,255,0.7); line-height: 1.6; max-width: 800px; margin: 0 auto; }
+        
+        /* Grid Forzado a 3 columnas */
+        .servicios-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(255,255,255,0.05); border-top: 1px solid rgba(81, 175, 49, 0.3); border-bottom: 1px solid rgba(81, 175, 49, 0.3); }
+        
+        .servicio-card { background-color: var(--color-card); padding: 40px 30px; min-height: 420px; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; transition: background-color 0.5s ease; cursor: pointer; outline: none; }
+        
+        /* Soporte para Hover (Desktop) y Focus/Active (Móvil) */
+        .servicio-card:hover, .servicio-card:focus-within { background-color: rgba(255,255,255,0.02); }
+        
+        .glow-effect { position: absolute; top: -60px; right: -60px; width: 180px; height: 180px; background-color: rgba(81, 175, 49, 0.15); border-radius: 50%; filter: blur(40px); opacity: 0; transition: opacity 0.7s ease; pointer-events: none; }
+        .servicio-card:hover .glow-effect, .servicio-card:focus-within .glow-effect { opacity: 1; }
+        
+        .servicio-icon { font-size: 5rem; color: rgba(255,255,255,0.05); transition: color 0.5s ease, transform 0.5s ease; margin-bottom: auto; }
+        .servicio-card:hover .servicio-icon, .servicio-card:focus-within .servicio-icon { color: rgba(81, 175, 49, 0.8); transform: scale(1.05); }
+        
+        .servicio-text h3 { font-size: 1.3rem; font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px; margin-bottom: 0; transition: color 0.5s, letter-spacing 0.5s, transform 0.5s; color: var(--color-white); }
+        .servicio-card:hover .servicio-text h3, .servicio-card:focus-within .servicio-text h3 { color: var(--color-green); letter-spacing: 1px; transform: translateX(5px); margin-bottom: 15px; }
+        
+        .servicio-info { max-height: 0; overflow: hidden; opacity: 0; transition: all 0.5s ease; }
+        .servicio-card:hover .servicio-info, .servicio-card:focus-within .servicio-info { max-height: 400px; opacity: 1; margin-top: 10px; }
+        
+        .servicio-info p { font-size: 0.9rem; color: rgba(255,255,255,0.7); line-height: 1.6; margin-bottom: 15px; }
+        .servicio-info ul { padding-left: 20px; color: rgba(255,255,255,0.5); font-size: 0.85rem; list-style-type: square; }
+        .servicio-info ul li { margin-bottom: 8px; }
+
+        /* --- PROYECTOS --- */
+        #proyectos { text-align: center; background-color: rgba(18, 20, 29, 0.7); backdrop-filter: blur(3px); }
+        #proyectos h2 { font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 900; margin-bottom: 20px; text-transform: uppercase; }
+        #proyectos p.sub { font-size: 1.2rem; margin-bottom: 40px; color: rgba(255,255,255,0.7); max-width: 800px; margin-left: auto; margin-right: auto; }
+        .project-tags { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-bottom: 50px; }
+        .tag { padding: 10px 20px; border: 1px solid rgba(255,255,255,0.2); border-radius: 30px; font-size: 0.85rem; text-transform: uppercase; font-weight: 600; transition: all 0.3s; cursor: pointer; }
+        .tag:hover { border-color: var(--color-green); color: var(--color-green); }
+        .btn-outline { display: inline-block; padding: 15px 40px; border: 1px solid var(--color-green); color: var(--color-green); font-weight: 800; border-radius: 30px; text-transform: uppercase; transition: all 0.3s; cursor: pointer; }
+        .btn-outline:hover { background-color: var(--color-green); color: var(--color-blue); }
+
+        /* --- NOSOTROS --- */
+        #nosotros { display: flex; align-items: stretch; padding: 0; background-color: var(--color-card); border-top: 1px solid rgba(255,255,255,0.05); }
+        .nosotros-left { flex: 0 0 45%; padding: 120px 5vw 120px 10vw; border-right: 1px solid rgba(255,255,255,0.05); }
+        .nosotros-right { flex: 1; padding: 120px 10vw 120px 5vw; display: flex; flex-direction: column; justify-content: center; }
+        .nosotros-left h2 { font-size: clamp(3rem, 6vw, 5rem); font-weight: 900; line-height: 1; margin-top: 20px; text-transform: uppercase; }
+        .nosotros-left .gradient-text-static { background: linear-gradient(90deg, #ff00ff, #fbb034); -webkit-background-clip: text; color: transparent; display: block; font-size: clamp(3.5rem, 7vw, 6rem); }
+        
+        .slogan-impact { font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; line-height: 1.1; margin-bottom: 30px; text-transform: uppercase; }
+        
+        .nosotros-right p.desc-text { font-size: 1.1rem; line-height: 1.8; color: rgba(255,255,255,0.7); margin-bottom: 25px; font-weight: 300; }
+        .highlight-quote { margin-top: 40px; display: flex; gap: 20px; align-items: stretch; }
+        .highlight-quote .bar { width: 3px; background-color: var(--color-green); }
+        .highlight-quote p { margin: 0; font-size: 1.2rem; color: var(--color-white); font-weight: 400; line-height: 1.6; }
+        .highlight-quote .highlight-word { color: var(--color-green); font-weight: 800; }
+
+        /* --- CONTACTO (CIERRE ASIMÉTRICO) --- */
+        #contacto { display: flex; align-items: stretch; padding: 120px 10vw; background-color: rgba(9, 10, 15, 0.7); backdrop-filter: blur(5px); gap: 5vw; }
+        .contact-left { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+        .contact-right { flex: 1; }
+        
+        .contact-left h2 { font-size: clamp(3rem, 6vw, 4.5rem); font-weight: 900; line-height: 1; margin-bottom: 20px; text-transform: uppercase; }
+        .contact-left p { font-size: 1.1rem; color: rgba(255,255,255,0.7); line-height: 1.6; margin-bottom: 40px; max-width: 90%; }
+        
+        .btn-solid { display: inline-flex; align-items: center; gap: 10px; padding: 18px 40px; font-size: 1rem; font-weight: 800; background-color: var(--color-green); color: var(--color-blue); border-radius: 50px; text-transform: uppercase; border: none; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; }
+        .btn-solid:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(81, 175, 49, 0.3); }
+        
+        .contact-form { display: flex; flex-direction: column; gap: 25px; }
+        .input-group label { display: block; font-size: 0.75rem; font-weight: 800; letter-spacing: 2px; color: rgba(255,255,255,0.5); margin-bottom: 10px; text-transform: uppercase; }
+        .contact-form input, .contact-form textarea { width: 100%; background-color: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; color: var(--color-white); font-family: var(--font-main); font-size: 1rem; outline: none; transition: border-color 0.3s, background-color 0.3s; }
+        .contact-form input:focus, .contact-form textarea:focus { border-color: var(--color-green); background-color: rgba(255,255,255,0.05); }
+        .contact-form textarea { height: 140px; resize: none; }
+
+        /* --- FOOTER ASIMÉTRICO --- */
+        footer { background-color: #0d0e1b; color: #888; padding: 40px 10vw; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; font-weight: 600; letter-spacing: 1.5px; border-top: 1px solid rgba(255,255,255,0.05); position: relative; z-index: 1; }
+        .footer-left span { color: var(--color-white); font-weight: 800; }
+        .footer-right a { color: #888; transition: color 0.3s; text-decoration: none; }
+        .footer-right a:hover { color: var(--color-green); }
+
+        /* --- ANIMACIONES SCROLL --- */
+        .fade-up { opacity: 0; transform: translateY(40px); transition: opacity 0.8s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1); }
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+        /* --- RESPONSIVO AUTOMÁTICO --- */
+        @media(max-width: 1024px) {
+            .servicios-grid { grid-template-columns: repeat(2, 1fr); }
+            #nosotros, #contacto { flex-direction: column; gap: 40px; }
+            .nosotros-left, .nosotros-right { padding: 80px 5vw; border-right: none; }
+            #contacto { padding: 80px 5vw; }
+            .contact-left p { max-width: 100%; }
+        }
+        @media(max-width: 768px) {
+            header { padding: 20px; } .nav-links { display: none; }
+            section { padding: 80px 5vw; }
+            /* En móviles pasamos a 1 columna */
+            .servicios-grid { grid-template-columns: 1fr; }
+            footer { flex-direction: column; gap: 20px; text-align: center; }
+            .btn-hero { padding: 15px 40px; font-size: 1rem; }
+            
+            /* En pantallas táctiles, garantizamos que un pequeño toque active la tarjeta */
+            .servicio-card:active .servicio-info { max-height: 400px; opacity: 1; margin-top: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PRELOADER -->
+    <div id="preloader">
+        <div class="loader-logo">TASWIQ<span>.</span></div>
+        <div class="spinner"></div>
+    </div>
+
+    <!-- CANVAS NEÓN MAGNÉTICO CENTRADO Y CRUZADO -->
+    <canvas id="neon-canvas"></canvas>
+
+    <!-- NAVBAR (TRANSICIÓN A BLANCO HUMO / NAVY) -->
+    <header id="navbar">
+        <a href="#inicio" class="logo-link">
+            <img src="logo.png" alt="Taswiq Logo" class="nav-logo">
+        </a>
+        <ul class="nav-links">
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#servicios">Servicios</a></li>
+            <li><a href="#proyectos">Proyectos</a></li>
+            <li><a href="#nosotros">Nosotros</a></li>
+        </ul>
+    </header>
+
+    <!-- INICIO -->
+    <section id="inicio">
+        <h1 class="fade-up">CREAMOS MARCAS QUE<br><span class="gradient-text-green">CONECTAN</span></h1>
+        <p class="desc fade-up">Somos una agencia de marketing y publicidad que combina estrategia, creatividad y producción para crear marcas, campañas y experiencias que conectan y generan resultados.</p>
+        <a href="#contacto" class="btn-hero fade-up">CONOCE TASWIQ</a>
+
+        <!-- CINTA TIPO CARRUSEL -->
+        <div class="marquee-wrapper">
+            <div class="marquee">
+                ESTRATEGIA <span class="highlight">&middot;</span> DISEÑO <span class="highlight">&middot;</span> MARKETING <span class="highlight">&middot;</span> PUBLICIDAD <span class="highlight">&middot;</span> EXPERIENCIAS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                ESTRATEGIA <span class="highlight">&middot;</span> DISEÑO <span class="highlight">&middot;</span> MARKETING <span class="highlight">&middot;</span> PUBLICIDAD <span class="highlight">&middot;</span> EXPERIENCIAS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                ESTRATEGIA <span class="highlight">&middot;</span> DISEÑO <span class="highlight">&middot;</span> MARKETING <span class="highlight">&middot;</span> PUBLICIDAD <span class="highlight">&middot;</span> EXPERIENCIAS
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICIOS -->
+    <section id="servicios">
+        <div class="bnn-header fade-up">
+            <div class="line"></div>
+            <span>// SERVICIOS</span>
+        </div>
+        
+        <div class="services-intro fade-up">
+            <h2>TODO LO QUE TU MARCA NECESITA PARA CRECER.</h2>
+            <p>Integramos diferentes disciplinas para construir marcas consistentes, conectar con sus audiencias y llevar sus ideas a la realidad.</p>
+        </div>
+
+        <!-- GRID 3x2 PERFECTO -->
+        <div class="servicios-grid fade-up">
+            <!-- 1. Estrategia -->
+            <article tabindex="0" class="servicio-card">
+                <div class="glow-effect"></div>
+                <div class="servicio-icon"><i class="fa-solid fa-chess-knight"></i></div>
+                <div class="servicio-text">
+                    <h3>ESTRATEGIA</h3>
+                    <div class="servicio-info">
+                        <p>Diseñamos estrategias de marketing que impulsan marcas y convierten objetivos en acciones.</p>
+                        <ul>
+                            <li>Estrategia de marketing</li>
+                            <li>Planeación de campañas</li>
+                            <li>Posicionamiento de marca</li>
+                            <li>Estrategia comercial</li>
+                            <li>Investigación de mercado</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 2. Diseño -->
+            <article tabindex="0" class="servicio-card">
+                <div class="glow-effect"></div>
+                <div class="servicio-icon"><i class="fa-solid fa-pen-nib"></i></div>
+                <div class="servicio-text">
+                    <h3>DISEÑO</h3>
+                    <div class="servicio-info">
+                        <p>Creamos identidades y piezas visuales que comunican, diferencian y hacen memorable a una marca.</p>
+                        <ul>
+                            <li>Identidad de marca & Branding</li>
+                            <li>Diseño gráfico & editorial</li>
+                            <li>Materiales publicitarios</li>
+                            <li>Diseño para medios digitales</li>
+                            <li>Packaging y aplicaciones</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 3. Marketing -->
+            <article tabindex="0" class="servicio-card">
+                <div class="glow-effect"></div>
+                <div class="servicio-icon"><i class="fa-solid fa-bullseye"></i></div>
+                <div class="servicio-text">
+                    <h3>MARKETING</h3>
+                    <div class="servicio-info">
+                        <p>Conectamos tu marca con las personas correctas a través de estrategias de comunicación relevantes.</p>
+                        <ul>
+                            <li>Marketing digital & Social media</li>
+                            <li>Creación de contenido</li>
+                            <li>Gestión de redes sociales</li>
+                            <li>Campañas digitales</li>
+                            <li>Fotografía, video & Influencer</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 4. Publicidad -->
+            <article tabindex="0" class="servicio-card">
+                <div class="glow-effect"></div>
+                <div class="servicio-icon"><i class="fa-solid fa-rectangle-ad"></i></div>
+                <div class="servicio-text">
+                    <h3>PUBLICIDAD</h3>
+                    <div class="servicio-info">
+                        <p>Desarrollamos campañas creativas que generan visibilidad, conexión e impacto.</p>
+                        <ul>
+                            <li>Campañas publicitarias</li>
+                            <li>Publicidad digital & exterior</li>
+                            <li>Material promocional</li>
+                            <li>Comunicación en punto de venta</li>
+                            <li>Campañas BTL</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 5. Eventos & Experiencias -->
+            <article tabindex="0" class="servicio-card">
+                <div class="glow-effect"></div>
+                <div class="servicio-icon"><i class="fa-solid fa-champagne-glasses"></i></div>
+                <div class="servicio-text">
+                    <h3>EVENTOS & EXPERIENCIAS</h3>
+                    <div class="servicio-info">
+                        <p>Llevamos las marcas del concepto a la experiencia a través de eventos y activaciones que generan conexión.</p>
+                        <ul>
+                            <li>Activaciones de marca</li>
+                            <li>Lanzamientos</li>
+                            <li>Eventos corporativos & deportivos</li>
+                            <li>Experiencias BTL</li>
+                            <li>Branding de espacios</li>
+                            <li>Promociones y sampling</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 6. Producción -->
+            <article tabindex="0" class="servicio-card">
+                <div class="glow-effect"></div>
+                <div class="servicio-icon"><i class="fa-solid fa-photo-film"></i></div>
+                <div class="servicio-text">
+                    <h3>PRODUCCIÓN</h3>
+                    <div class="servicio-info">
+                        <p>Hacemos realidad cada idea cuidando la ejecución y cada detalle logístico y audiovisual.</p>
+                        <ul>
+                            <li>Producción de eventos</li>
+                            <li>Montaje & Logística</li>
+                            <li>Producción audiovisual</li>
+                            <li>Materiales publicitarios</li>
+                            <li>Merchandising</li>
+                            <li>Personal para activaciones</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- PROYECTOS -->
+    <section id="proyectos">
+        <div class="bnn-header justify-center fade-up">
+            <div class="line"></div>
+            <span>// PROYECTOS</span>
+            <div class="line"></div>
+        </div>
+        <h2 class="fade-up">IDEAS QUE SE HACEN REALIDAD.</h2>
+        <p class="sub fade-up">Cada proyecto es una oportunidad para conectar una marca con las personas de una manera diferente. Descubre cómo transformamos ideas en estrategias, campañas, diseños y experiencias.</p>
+        <div class="project-tags fade-up">
+            <span class="tag">Branding</span>
+            <span class="tag">Diseño</span>
+            <span class="tag">Marketing</span>
+            <span class="tag">Publicidad</span>
+            <span class="tag">Eventos</span>
+            <span class="tag">Experiencias</span>
+        </div>
+        <button class="btn-outline fade-up">VER PROYECTOS</button>
+    </section>
+
+    <!-- NOSOTROS -->
+    <section id="nosotros">
+        <div class="nosotros-left">
+            <div class="bnn-header fade-up">
+                <div class="line"></div>
+                <span>// QUIÉNES SOMOS</span>
+            </div>
+            <h2 class="fade-up">THE TASWIQ<br><span class="gradient-text-static">CODE</span></h2>
+        </div>
+        <div class="nosotros-right">
+            <div class="slogan-impact fade-up">
+                NO SOLO HACEMOS PUBLICIDAD.<br>
+                CREAMOS <span class="gradient-text-green">CONEXIONES.</span>
+            </div>
+            
+            <p class="desc-text fade-up">En TASWIQ creemos que una buena marca va más allá de verse bien. Necesita una estrategia, una identidad clara, una comunicación relevante y experiencias que generen conexión.</p>
+            <div class="highlight-quote fade-up">
+                <div class="bar"></div>
+                <p>Por eso integramos estrategia, diseño, marketing, publicidad y producción en un mismo equipo. <br><br><span class="highlight-word">Pensamos. Diseñamos. Comunicamos. Creamos experiencias.</span></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACTO (CIERRE ASIMÉTRICO) -->
+    <section id="contacto">
+        <div class="contact-left fade-up">
+            <div class="bnn-header">
+                <div class="line"></div>
+                <span>// CONTACTO</span>
+            </div>
+            <h2>¿TIENES UNA IDEA?<br><span class="gradient-text-green">HAGÁMOSLA SUCEDER.</span></h2>
+            <p>Cuéntanos qué necesita tu marca y construyamos juntos una estrategia que conecte, comunique y genere resultados.</p>
+            
+            <a href="tel:8123888087" class="btn-solid"><i class="fa-solid fa-phone"></i> 81 2388 8087</a>
+        </div>
+        
+        <div class="contact-right fade-up">
+            <form class="contact-form">
+                <div class="input-group">
+                    <label>Nombre</label>
+                    <input type="text" placeholder="Tu nombre" required>
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="tu@email.com" required>
+                </div>
+                <div class="input-group">
+                    <label>¿En qué te ayudamos?</label>
+                    <textarea placeholder="Cuéntanos brevemente el proyecto, marca o pregunta." required></textarea>
+                </div>
+                <button type="submit" class="btn-solid">ENVIAR &rarr;</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- FOOTER ASIMÉTRICO -->
+    <footer>
+        <div class="footer-left"><span>TASWIQ BRAND</span> &copy; 2026 // CREANDO CONEXIONES</div>
+        <div class="footer-right"><a href="privacidad.html">AVISO DE PRIVACIDAD</a></div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script>
+        // --- PRELOADER ---
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            setTimeout(() => {
+                preloader.style.opacity = '0';
+                setTimeout(() => { preloader.style.visibility = 'hidden'; }, 800);
+            }, 800);
+        });
+
+        // --- TRACKING DEL RATÓN ---
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        // --- CANVAS NEÓN MAGNÉTICO ---
+        const canvas = document.getElementById('neon-canvas');
+        const ctx = canvas.getContext('2d');
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+
+        window.addEventListener('resize', () => {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        });
+
+        const cables = [
+            { color: '#ff00ff', baseX: 0.50, offset: -25, speed: 0.0004, amplitude: 65 },  
+            { color: '#7a00ff', baseX: 0.49, offset: 35,  speed: 0.0005, amplitude: -55 }, 
+            { color: '#51af31', baseX: 0.51, offset: -15, speed: 0.0006, amplitude: 45 },  
+            { color: '#00ffff', baseX: 0.50, offset: 20,  speed: 0.0003, amplitude: -70 }  
+        ];
+
+        function drawNeon() {
+            ctx.clearRect(0, 0, width, height);
+            let time = Date.now();
+
+            cables.forEach(cable => {
+                let startX = (width * cable.baseX) + Math.sin(time * cable.speed) * cable.amplitude;
+                let endX = startX + cable.offset;
+                
+                let baseCpX = (startX + endX) / 2;
+                let baseCpY = height / 2;
+                
+                let targetCpX = baseCpX;
+                let targetCpY = baseCpY;
+                
+                let distX = mouseX - baseCpX;
+                let distY = mouseY - baseCpY;
+                let distance = Math.sqrt(distX*distX + distY*distY);
+                let radius = 600; 
+                
+                if (distance < radius) {
+                    let force = Math.pow(1 - (distance / radius), 2);
+                    targetCpX = baseCpX + distX * force * 0.85; 
+                    targetCpY = baseCpY + distY * force * 0.85;
+                }
+
+                if (!cable.cpX) cable.cpX = targetCpX;
+                if (!cable.cpY) cable.cpY = targetCpY;
+                cable.cpX += (targetCpX - cable.cpX) * 0.08;
+                cable.cpY += (targetCpY - cable.cpY) * 0.08;
+
+                ctx.beginPath();
+                ctx.moveTo(startX, -50);
+                ctx.quadraticCurveTo(cable.cpX, cable.cpY, endX, height + 50);
+                ctx.strokeStyle = cable.color;
+                ctx.lineWidth = 6; 
+                ctx.lineCap = 'round';
+                ctx.shadowBlur = 25; 
+                ctx.shadowColor = cable.color;
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(startX, -50);
+                ctx.quadraticCurveTo(cable.cpX, cable.cpY, endX, height + 50);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#ffffff';
+                ctx.shadowBlur = 10;
+                ctx.stroke();
+            });
+
+            requestAnimationFrame(drawNeon);
+        }
+        drawNeon();
+
+        // --- NAVBAR SCROLL ANIMATION ---
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) navbar.classList.add('scrolled');
+            else navbar.classList.remove('scrolled');
+        });
+
+        // --- INTERSECTION OBSERVER ---
+        const appearOptions = { threshold: 0.15, rootMargin: "0px 0px -50px 0px" };
+        const appearOnScroll = new IntersectionObserver(function(entries, appearOnScroll) {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                if(entry.target.classList.contains('fade-up')) entry.target.classList.add('visible');
+                appearOnScroll.unobserve(entry.target);
+            });
+        }, appearOptions);
+
+        document.querySelectorAll('.fade-up').forEach(el => appearOnScroll.observe(el));
+    </script>
+</body>
+</html>
