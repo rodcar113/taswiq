@@ -40,15 +40,18 @@
         .spinner { width: 50px; height: 50px; border: 4px solid rgba(81, 175, 49, 0.2); border-top-color: var(--color-green); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* --- CANVAS NEÓN --- */
-        #neon-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; will-change: contents; }
+        /* --- CANVAS NEÓN (SIN WILL-CHANGE PARA MANTENER RESOLUCIÓN 4K NATIVA) --- */
+        #neon-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; }
 
         /* --- NAVBAR --- */
         header { 
             position: fixed; top: 0; left: 0; width: 100%; padding: 30px 50px; 
             display: flex; justify-content: space-between; align-items: center; 
-            z-index: 1000; background-color: rgba(244, 244, 249, 0); 
+            z-index: 9999; background-color: rgba(244, 244, 249, 0); 
             transition: background-color 0.4s ease, padding 0.4s ease, box-shadow 0.4s ease; 
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            will-change: background-color, padding;
         }
         header.scrolled { 
             background-color: rgba(244, 244, 249, 0.96); 
@@ -78,16 +81,15 @@
         #inicio { 
             height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; 
             text-align: center; padding: 0 5vw; position: relative; 
-            z-index: auto; /* Permite que la imagen de fondo se vaya atrás del canvas */
+            z-index: auto; 
         }
         
         .hero-bg-image { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
             background: url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat; 
-            opacity: 0.15; z-index: -1; pointer-events: none; filter: grayscale(50%); /* z-index -1 la pone detrás del Canvas Neón */
+            opacity: 0.15; z-index: -1; pointer-events: none; filter: grayscale(50%);
         }
 
-        /* Textos y botones del Hero deben estar en z-index: 1 para verse por encima de los láseres */
         #inicio h1, #inicio p.desc, #inicio .btn-hero, #inicio .marquee-wrapper { position: relative; z-index: 1; }
 
         #inicio h1 { font-size: clamp(3.5rem, 8vw, 7.5rem); font-weight: 900; line-height: 0.95; margin-bottom: 30px; text-transform: uppercase; letter-spacing: -2px; }
@@ -106,7 +108,6 @@
 
         /* --- SECCIONES ALTERNADAS --- */
         section { padding: 120px 10vw; position: relative; z-index: 1; }
-        /* El blur SOLO se aplica a las secciones de abajo, respetando la nitidez del inicio */
         .bg-gray { background-color: var(--color-gray); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
         .bg-dark { background-color: rgba(9, 10, 15, 0.85); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
         
@@ -248,7 +249,7 @@
         </ul>
     </header>
 
-    <!-- INICIO -->
+    <!-- INICIO (CON IMAGEN DE FONDO) -->
     <section id="inicio">
         <div class="hero-bg-image"></div>
         <h1 class="fade-up">CREAMOS MARCAS QUE<br><span class="gradient-text-green">CONECTAN</span></h1>
@@ -265,7 +266,7 @@
         </div>
     </section>
 
-    <!-- SERVICIOS -->
+    <!-- SERVICIOS (FONDO GRIS) -->
     <section id="servicios" class="bg-gray">
         <div class="bnn-header fade-up">
             <div class="line"></div>
@@ -390,7 +391,7 @@
         </div>
     </section>
 
-    <!-- PROYECTOS -->
+    <!-- PROYECTOS (FONDO OSCURO) -->
     <section id="proyectos" class="bg-dark">
         <div class="bnn-header justify-center fade-up">
             <div class="line"></div>
@@ -410,7 +411,7 @@
         <button class="btn-outline fade-up">VER PROYECTOS</button>
     </section>
 
-    <!-- NOSOTROS -->
+    <!-- NOSOTROS (FONDO GRIS CON FOTO DOBLE) -->
     <section id="nosotros" class="bg-gray">
         <div class="nosotros-left">
             <div class="bnn-header fade-up">
@@ -439,7 +440,7 @@
         </div>
     </section>
 
-    <!-- CONTACTO -->
+    <!-- CONTACTO (FONDO OSCURO Y CORREO) -->
     <section id="contacto" class="bg-dark">
         <div class="contact-left fade-up">
             <div class="bnn-header">
@@ -488,7 +489,7 @@
             setTimeout(() => { preloader.style.opacity = '0'; setTimeout(() => { preloader.style.visibility = 'hidden'; }, 800); }, 800);
         });
 
-        // --- MENÚ MÓVIL BLINDADO ---
+        // --- MENÚ MÓVIL ---
         const mobileMenuBtn = document.getElementById('mobile-menu');
         const navLinksContainer = document.getElementById('nav-links');
         const header = document.getElementById('navbar');
@@ -514,7 +515,7 @@
         let mouseY = window.innerHeight / 2;
         document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
 
-        // --- CANVAS NEÓN (ALTA RESOLUCIÓN Y MAGNÉTICO) ---
+        // --- CANVAS NEÓN (4K NATIVO) ---
         const canvas = document.getElementById('neon-canvas');
         const ctx = canvas.getContext('2d');
         let width, height;
@@ -591,11 +592,21 @@
         }
         drawNeon();
 
-        // --- NAVBAR SCROLL OPTIMIZADO PARA MÓVIL ---
+        // --- SCROLL NAVBAR OPTIMIZADO CON LOCK BOOLEANO ---
         const headerEl = document.getElementById('navbar');
+        let isScrolled = false;
+
         window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) headerEl.classList.add('scrolled');
-            else headerEl.classList.remove('scrolled');
+            requestAnimationFrame(() => {
+                const currentScroll = window.pageYOffset || window.scrollY;
+                if (currentScroll > 50 && !isScrolled) {
+                    headerEl.classList.add('scrolled');
+                    isScrolled = true;
+                } else if (currentScroll <= 50 && isScrolled) {
+                    headerEl.classList.remove('scrolled');
+                    isScrolled = false;
+                }
+            });
         }, { passive: true });
 
         // --- FADE UP OBSERVER ---
