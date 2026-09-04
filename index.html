@@ -47,11 +47,13 @@
         header { 
             position: fixed; top: 0; left: 0; width: 100%; padding: 30px 50px; 
             display: flex; justify-content: space-between; align-items: center; 
-            z-index: 1000; background-color: transparent; 
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+            z-index: 1000; background-color: rgba(244, 244, 249, 0); 
+            transition: background-color 0.4s ease, padding 0.4s ease, box-shadow 0.4s ease; 
         }
         header.scrolled { 
-            background-color: rgba(244, 244, 249, 0.95); backdrop-filter: blur(10px); 
+            background-color: rgba(244, 244, 249, 0.96); 
+            backdrop-filter: blur(10px); 
+            -webkit-backdrop-filter: blur(10px);
             padding: 15px 50px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); border-bottom: 1px solid rgba(0,0,0,0.05);
         }
         .nav-logo { max-height: 40px; width: auto; transition: transform 0.3s ease; position: relative; z-index: 1001; }
@@ -72,14 +74,21 @@
         .bnn-header .line { height: 1px; width: 40px; background-color: var(--color-green); }
         .bnn-header span { font-size: 0.7rem; font-weight: 800; letter-spacing: 4px; color: var(--color-green); text-transform: uppercase; }
 
-        /* --- HERO (INICIO) CON IMAGEN DE FONDO --- */
-        #inicio { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 5vw; position: relative; z-index: 1; }
+        /* --- HERO (INICIO) CON IMAGEN DE FONDO DETRÁS DE LÁSERES --- */
+        #inicio { 
+            height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            text-align: center; padding: 0 5vw; position: relative; 
+            z-index: auto; /* Permite que la imagen de fondo se vaya atrás del canvas */
+        }
         
         .hero-bg-image { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
             background: url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat; 
-            opacity: 0.12; z-index: -1; pointer-events: none; filter: grayscale(50%);
+            opacity: 0.15; z-index: -1; pointer-events: none; filter: grayscale(50%); /* z-index -1 la pone detrás del Canvas Neón */
         }
+
+        /* Textos y botones del Hero deben estar en z-index: 1 para verse por encima de los láseres */
+        #inicio h1, #inicio p.desc, #inicio .btn-hero, #inicio .marquee-wrapper { position: relative; z-index: 1; }
 
         #inicio h1 { font-size: clamp(3.5rem, 8vw, 7.5rem); font-weight: 900; line-height: 0.95; margin-bottom: 30px; text-transform: uppercase; letter-spacing: -2px; }
         .gradient-text-green { background: linear-gradient(90deg, #51af31, #222548, #51af31, #84d867, #51af31); background-size: 300% auto; color: transparent; -webkit-background-clip: text; background-clip: text; animation: gradientMove 4s linear infinite; }
@@ -90,15 +99,16 @@
         .btn-hero:hover { background-color: transparent; color: var(--color-white); box-shadow: 0 0 20px rgba(81, 175, 49, 0.6); }
 
         /* --- CINTA MARQUEE --- */
-        .marquee-wrapper { position: absolute; bottom: 40px; width: 100vw; overflow: hidden; white-space: nowrap; display: flex; align-items: center; z-index: 1; opacity: 0.6; }
+        .marquee-wrapper { position: absolute; bottom: 40px; width: 100vw; overflow: hidden; white-space: nowrap; display: flex; align-items: center; opacity: 0.6; }
         .marquee { display: inline-block; animation: scrollText 20s linear infinite; font-size: 1.2rem; font-weight: 800; color: rgba(255,255,255,0.5); letter-spacing: 4px; text-transform: uppercase; }
         .marquee span.highlight { color: var(--color-green); }
         @keyframes scrollText { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
         /* --- SECCIONES ALTERNADAS --- */
-        section { padding: 120px 10vw; position: relative; z-index: 1; backdrop-filter: blur(4px); }
-        .bg-gray { background-color: var(--color-gray); }
-        .bg-dark { background-color: rgba(9, 10, 15, 0.85); }
+        section { padding: 120px 10vw; position: relative; z-index: 1; }
+        /* El blur SOLO se aplica a las secciones de abajo, respetando la nitidez del inicio */
+        .bg-gray { background-color: var(--color-gray); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
+        .bg-dark { background-color: rgba(9, 10, 15, 0.85); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
         
         /* --- SERVICIOS --- */
         .services-intro { margin-bottom: 60px; text-align: center; }
@@ -190,7 +200,7 @@
         @media(max-width: 768px) {
             header { padding: 20px 5vw; } header.scrolled { padding: 15px 5vw; }
             .menu-toggle { display: block; }
-            .nav-links { position: fixed; top: 0; right: -100%; width: 100vw; height: 100vh; background-color: rgba(9, 10, 15, 0.98); backdrop-filter: blur(15px); flex-direction: column; justify-content: center; align-items: center; transition: right 0.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; gap: 40px; }
+            .nav-links { position: fixed; top: 0; right: -100vw; width: 100vw; height: 100vh; background-color: rgba(9, 10, 15, 0.98); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); flex-direction: column; justify-content: center; align-items: center; transition: right 0.4s ease; z-index: 1000; gap: 40px; }
             .nav-links.active { right: 0; }
             .nav-links li a { font-size: 1.5rem; color: var(--color-white) !important; }
             header.scrolled .nav-links li a { color: var(--color-white) !important; }
@@ -205,7 +215,7 @@
             
             footer { flex-direction: column; gap: 20px; text-align: center; }
             .btn-hero { padding: 15px 40px; font-size: 1rem; }
-            header.menu-open { background-color: transparent !important; box-shadow: none !important; border: none !important; }
+            header.menu-open { background-color: transparent !important; box-shadow: none !important; border-bottom: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;}
             header.menu-open .menu-toggle { color: var(--color-white) !important; }
             .stacked-images { height: 280px; }
             .img-back { height: 200px; }
@@ -238,13 +248,13 @@
         </ul>
     </header>
 
-    <!-- INICIO (CON IMAGEN DE FONDO) -->
+    <!-- INICIO -->
     <section id="inicio">
         <div class="hero-bg-image"></div>
         <h1 class="fade-up">CREAMOS MARCAS QUE<br><span class="gradient-text-green">CONECTAN</span></h1>
         <p class="desc fade-up">Somos una agencia de marketing y publicidad que combina estrategia, creatividad y producción para crear marcas, campañas y experiencias que conectan y generan resultados.</p>
         <a href="#contacto" class="btn-hero fade-up">CONOCE TASWIQ</a>
-
+<br><br><br><br><br>
         <!-- CINTA TIPO CARRUSEL -->
         <div class="marquee-wrapper">
             <div class="marquee">
@@ -255,7 +265,7 @@
         </div>
     </section>
 
-    <!-- SERVICIOS (FONDO GRIS) -->
+    <!-- SERVICIOS -->
     <section id="servicios" class="bg-gray">
         <div class="bnn-header fade-up">
             <div class="line"></div>
@@ -380,7 +390,7 @@
         </div>
     </section>
 
-    <!-- PROYECTOS (FONDO OSCURO) -->
+    <!-- PROYECTOS -->
     <section id="proyectos" class="bg-dark">
         <div class="bnn-header justify-center fade-up">
             <div class="line"></div>
@@ -400,7 +410,7 @@
         <button class="btn-outline fade-up">VER PROYECTOS</button>
     </section>
 
-    <!-- NOSOTROS (FONDO GRIS CON FOTO DOBLE) -->
+    <!-- NOSOTROS -->
     <section id="nosotros" class="bg-gray">
         <div class="nosotros-left">
             <div class="bnn-header fade-up">
@@ -409,7 +419,6 @@
             </div>
             <h2 class="fade-up">THE TASWIQ<br><span class="gradient-text-green">CODE</span></h2>
             
-            <!-- FOTOS EMPALMADAS EN CSS PURO -->
             <div class="stacked-images fade-up">
                 <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="img-back" alt="Estrategia Taswiq">
                 <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="img-front" alt="Equipo Taswiq">
@@ -430,7 +439,7 @@
         </div>
     </section>
 
-    <!-- CONTACTO (FONDO OSCURO Y CORREO) -->
+    <!-- CONTACTO -->
     <section id="contacto" class="bg-dark">
         <div class="contact-left fade-up">
             <div class="bnn-header">
@@ -479,7 +488,7 @@
             setTimeout(() => { preloader.style.opacity = '0'; setTimeout(() => { preloader.style.visibility = 'hidden'; }, 800); }, 800);
         });
 
-        // --- MENÚ MÓVIL ---
+        // --- MENÚ MÓVIL BLINDADO ---
         const mobileMenuBtn = document.getElementById('mobile-menu');
         const navLinksContainer = document.getElementById('nav-links');
         const header = document.getElementById('navbar');
@@ -582,12 +591,12 @@
         }
         drawNeon();
 
-        // --- NAVBAR SCROLL ---
+        // --- NAVBAR SCROLL OPTIMIZADO PARA MÓVIL ---
         const headerEl = document.getElementById('navbar');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 50) headerEl.classList.add('scrolled');
             else headerEl.classList.remove('scrolled');
-        });
+        }, { passive: true });
 
         // --- FADE UP OBSERVER ---
         const appearOptions = { threshold: 0.15, rootMargin: "0px 0px -50px 0px" };
